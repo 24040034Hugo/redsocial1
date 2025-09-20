@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HugoConnect - Red Social</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%234285f4'/><path d='M30 35h40v6H30zm0 12h40v6H30zm0 12h30v6H30z' fill='white'/></svg>">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style/styles.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-satellite-dish"></i>
+                <h2>HugoConnect</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active" data-section="home">Inicio</a>
+                <a href="#" class="nav-link" data-section="explore">Explorar</a>
+                <a href="#" class="nav-link" data-section="messages">Mensajes</a>
+                <a href="#" class="nav-link" data-section="profile">Perfil</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn-primary" onclick="openPostModal()">Publicar</button>
+                <div class="profile-avatar">
+                    <img src="image/imagen1.jpg" alt="Avatar">
+                </div>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <nav class="mobile-menu" id="mobileMenu">
+            <a href="#" class="mobile-nav-link active" data-section="home">
+                <i class="fas fa-home"></i> Inicio
+            </a>
+            <a href="#" class="mobile-nav-link" data-section="explore">
+                <i class="fas fa-compass"></i> Explorar
+            </a>
+            <a href="#" class="mobile-nav-link" data-section="messages">
+                <i class="fas fa-envelope"></i> Mensajes
+            </a>
+            <a href="#" class="mobile-nav-link" data-section="profile">
+                <i class="fas fa-user"></i> Perfil
+            </a>
+        </nav>
+    </header>
+
+    <!-- Modal para crear publicación -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Crear publicación</h3>
+                <span class="close" onclick="closePostModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-user">
+                    <img src="image/imagen1.jpg" alt="Hugo" class="modal-avatar">
+                    <div>
+                        <h4>Hugo Lc</h4>
+                        <p>Administrador</p>
+                    </div>
+                </div>
+                <textarea id="postTextarea" placeholder="¿Qué quieres compartir, Hugo?" rows="4"></textarea>
+                <div id="imagePreview" class="image-preview"></div>
+                <div class="modal-actions">
+                    <button type="button" onclick="document.getElementById('modalImageUpload').click()" class="modal-action-btn">
+                        <i class="fas fa-image"></i> <span class="btn-text">Agregar foto</span>
+                    </button>
+                    <button type="button" onclick="addEmoji('😊')" class="modal-action-btn">
+                        <i class="fas fa-smile"></i> <span class="btn-text">Emoji</span>
+                    </button>
+                    <button type="button" onclick="setPostVisibility()" class="modal-action-btn">
+                        <i class="fas fa-globe"></i> <span class="btn-text">Público</span>
+                    </button>
+                </div>
+                <input type="file" id="modalImageUpload" accept="image/*" style="display: none;">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closePostModal()">Cancelar</button>
+                <button class="btn-publish" onclick="publishPost()">Publicar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
+    <div id="commentsModal" class="comments-modal">
+        <div class="comments-content">
+            <div class="comments-header">
+                <h3>Comentarios</h3>
+                <span class="close" onclick="closeCommentsModal()">&times;</span>
+            </div>
+            <div class="comments-list" id="commentsList">
+                <!-- Comments will be loaded here -->
+            </div>
+            <div class="add-comment">
+                <img src="image/imagen1.jpg" alt="Your avatar" class="comment-avatar">
+                <textarea id="commentTextarea" placeholder="Escribe un comentario..."></textarea>
+                <button class="comment-btn" onclick="addComment()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Home Section -->
+        <div id="homeSection" class="content-section active">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="user-profile">
+                    <div class="profile-image">
+                        <img src="image/imagen1.jpg" alt="Hugo Profile" id="profileImage">
+                        <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
+                        <button class="change-photo-btn" onclick="document.getElementById('profileImageUpload').click()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <h3>Hugo Lc</h3>
+                    <p class="username">@hugo.ilc</p>
+                    <div class="admin-badge">
+                        <i class="fas fa-crown"></i>
+                        <span>Administrador</span>
+                    </div>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="followersCount">2.5K</span>
+                            <span class="stat-label">Seguidores</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1.2K</span>
+                            <span class="stat-label">Siguiendo</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="postsCount">350</span>
+                            <span class="stat-label">Posts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-links">
+                    <h4>Sígueme en mis redes</h4>
+                    <a href="https://instagram.com/hugo.ilc" target="_blank" class="social-link instagram">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="https://facebook.com/Hugo.Lc" target="_blank" class="social-link facebook">
+                        <i class="fab fa-facebook"></i>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://tiktok.com/@hugo.ilc" target="_blank" class="social-link tiktok">
+                        <i class="fab fa-tiktok"></i>
+                        <span>TikTok</span>
+                    </a>
+                </div>
+
+                <!-- Admin Panel -->
+                <div class="admin-panel">
+                    <h4><i class="fas fa-cog"></i> Panel de Admin</h4>
+                    <button class="admin-btn" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon"></i> Modo Oscuro
+                    </button>
+                    <button class="admin-btn" onclick="viewAnalytics()">
+                        <i class="fas fa-chart-bar"></i> Estadísticas
+                    </button>
+                    <button class="admin-btn" onclick="manageUsers()">
+                        <i class="fas fa-users"></i> Usuarios
+                    </button>
+                </div>
+
+                <!-- Trending Topics -->
+                <div class="trending-section">
+                    <h4>Tendencias</h4>
+                    <div class="trending-item">
+                        <span class="trending-tag">#TechNews</span>
+                        <span class="trending-count">15.2K posts</span>
+                    </div>
+                    <div class="trending-item">
+                        <span class="trending-tag">#Programación</span>
+                        <span class="trending-count">8.5K posts</span>
+                    </div>
+                    <div class="trending-item">
+                        <span class="trending-tag">#DesarrolloWeb</span>
+                        <span class="trending-count">12.1K posts</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Feed -->
+            <main class="feed">
+                <!-- Create Post -->
+                <div class="create-post">
+                    <div class="post-avatar">
+                        <img src="image/imagen1.jpg" alt="Avatar">
+                    </div>
+                    <div class="post-input">
+                        <textarea placeholder="¿Qué estás pensando, Hugo?" onclick="openPostModal()" readonly></textarea>
+                        <div class="post-actions">
+                            <button class="post-action" onclick="openPostModal()">
+                                <i class="fas fa-image"></i> <span class="action-text">Foto</span>
+                            </button>
+                            <button class="post-action" onclick="openPostModal()">
+                                <i class="fas fa-video"></i> <span class="action-text">Video</span>
+                            </button>
+                            <button class="post-action" onclick="openPostModal()">
+                                <i class="fas fa-poll"></i> <span class="action-text">Encuesta</span>
+                            </button>
+                            <button class="btn-post" onclick="openPostModal()">Publicar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Posts Feed -->
+                <div class="posts-container" id="postsContainer">
+                    <!-- Sample Posts -->
+                    <article class="post">
+                        <div class="post-header">
+                            <div class="post-user">
+                                <img src="image/imagen1.jpg" alt="User" class="post-avatar">
+                                <div class="user-info">
+                                    <h4>Hugo Lc <i class="fas fa-crown admin-icon" title="Administrador"></i></h4>
+                                    <span class="post-time">Hace 2 horas</span>
+                                </div>
+                            </div>
+                            <button class="post-menu" onclick="showPostOptions(this)">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                        <div class="post-content">
+                            <p>¡Trabajando en nuevos proyectos de desarrollo web! El mundo de la programación nunca deja de sorprenderme 💻✨</p>
+                            <div class="post-image">
+                                <img src="image/imagen2.jpg" alt="Post image">
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn like">
+                                <i class="far fa-heart"></i>
+                                <span>124</span>
+                            </button>
+                            <button class="action-btn comment" onclick="showComments(this)">
+                                <i class="far fa-comment"></i>
+                                <span>23</span>
+                            </button>
+                            <button class="action-btn share" onclick="sharePost(this)">
+                                <i class="far fa-share-square"></i>
+                                <span>12</span>
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="post">
+                        <div class="post-header">
+                            <div class="post-user">
+                                <img src="image/imagen1.jpg" alt="User" class="post-avatar">
+                                <div class="user-info">
+                                    <h4>Hugo Lc <i class="fas fa-crown admin-icon" title="Administrador"></i></h4>
+                                    <span class="post-time">Hace 5 horas</span>
+                                </div>
+                            </div>
+                            <button class="post-menu" onclick="showPostOptions(this)">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                        <div class="post-content">
+                            <p>Conectando con desarrolladores de todo el mundo. La programación nos une sin importar las fronteras 🌎👨‍💻</p>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn like">
+                                <i class="far fa-heart"></i>
+                                <span>89</span>
+                            </button>
+                            <button class="action-btn comment" onclick="showComments(this)">
+                                <i class="far fa-comment"></i>
+                                <span>15</span>
+                            </button>
+                            <button class="action-btn share" onclick="sharePost(this)">
+                                <i class="far fa-share-square"></i>
+                                <span>8</span>
+                            </button>
+                        </div>
+                    </article>
+                </div>
+            </main>
+
+            <!-- Right Sidebar -->
+            <aside class="right-sidebar">
+                <!-- Suggested Connections -->
+                <div class="suggestions">
+                    <h4>Personas que podrías conocer</h4>
+                    <div class="suggestion-item">
+                        <img src="image/imagen3.jpg" alt="User" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <h5>Caro gtz</h5>
+                            <p>Desarrolladora Frontend</p>
+                        </div>
+                        <button class="btn-follow" onclick="followUser(this)">Seguir</button>
+                    </div>
+                    <div class="suggestion-item">
+                        <img src="image/imagen6.jpg" alt="User" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <h5>Carlos De Los Santos</h5>
+                            <p>UX Designer</p>
+                        </div>
+                        <button class="btn-follow" onclick="followUser(this)">Seguir</button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <h4>Actividad Reciente</h4>
+                    <div id="activityFeed">
+                        <div class="activity-item">
+                            <i class="fas fa-heart activity-icon like"></i>
+                            <p><strong>Karely</strong> le gustó tu publicación</p>
+                            <span class="activity-time">5 min</span>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-comment activity-icon comment"></i>
+                            <p><strong>Cesar</strong> comentó en tu post</p>
+                            <span class="activity-time">15 min</span>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-user-plus activity-icon follow"></i>
+                            <p><strong>Nohemi</strong> comenzó a seguirte</p>
+                            <span class="activity-time">1h</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online Users -->
+                <div class="online-users">
+                    <h4>Usuarios en línea</h4>
+                    <div class="online-user">
+                        <div class="online-indicator"></div>
+                        <img src="image/imagen3.jpg" alt="User">
+                        <span>Caro gtz</span>
+                    </div>
+                    <div class="online-user">
+                        <div class="online-indicator"></div>
+                        <img src="image/imagen6.jpg" alt="User">
+                        <span>Carlos De Los Santos</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Explore Section -->
+        <div id="exploreSection" class="content-section section-content">
+            <h2><i class="fas fa-compass"></i> Explorar</h2>
+            <div class="explore-grid" id="exploreGrid">
+                <!-- Explore content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div id="messagesSection" class="content-section section-content">
+            <h2><i class="fas fa-envelope"></i> Mensajes</h2>
+            <div class="messages-container">
+                <div class="conversations-list">
+                    <h3>Conversaciones</h3>
+                    <div id="conversationsList">
+                        <!-- Conversations will be loaded here -->
+                    </div>
+                </div>
+                <div class="chat-window" id="chatWindow">
+                    <div class="chat-placeholder">
+                        <i class="fas fa-comments"></i>
+                        <h3>Selecciona una conversación</h3>
+                        <p>Elige una conversación de la lista para comenzar a chatear</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profileSection" class="content-section section-content">
+            <div class="profile-header">
+                <img src="image/imagen1.jpg" alt="Hugo Profile">
+                <h2>Hugo Lc</h2>
+                <p>@hugo.ilc • Desarrollador Full Stack</p>
+                <div class="admin-badge">
+                    <i class="fas fa-crown"></i>
+                    <span>Administrador</span>
+                </div>
+            </div>
+            
+            <div class="profile-tabs">
+                <button class="profile-tab active" onclick="showProfileTab('posts')">
+                    <i class="fas fa-th-large"></i> Posts
+                </button>
+                <button class="profile-tab" onclick="showProfileTab('about')">
+                    <i class="fas fa-info-circle"></i> Acerca de
+                </button>
+                <button class="profile-tab" onclick="showProfileTab('media')">
+                    <i class="fas fa-images"></i> Multimedia
+                </button>
+            </div>
+
+            <div id="profileContent">
+                <!-- Profile content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#" class="bottom-nav-item active" data-section="home">
+            <i class="fas fa-home"></i>
+            <span>Inicio</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-section="explore">
+            <i class="fas fa-compass"></i>
+            <span>Explorar</span>
+        </a>
+        <button class="bottom-nav-item post-btn" onclick="openPostModal()">
+            <i class="fas fa-plus"></i>
+            <span>Publicar</span>
+        </button>
+        <a href="#" class="bottom-nav-item" data-section="messages">
+            <i class="fas fa-envelope"></i>
+            <span>Mensajes</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-section="profile">
+            <i class="fas fa-user"></i>
+            <span>Perfil</span>
+        </a>
+    </nav>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 HugoConnect. Todos los derechos reservados.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacidad</a>
+                <a href="#terms">Términos</a>
+                <a href="#support">Soporte</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification"></div>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html>
